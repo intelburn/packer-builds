@@ -1,0 +1,103 @@
+{
+  "variables":
+    {
+    "username": "root",
+    "userpass": "toor",
+    "ExportDir": "./packer_kali"
+    },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "cpus": 8,
+      "memory": 16384,
+      "disk_size": 100000,
+      "guest_os_type": "Debian_64",
+      "vboxmanage": [
+        [ "modifyvm", "{{.Name}}", "--vram", "128" ]
+      ],
+      "iso_url": "https://cdimage.kali.org/kali-2019.3/kali-linux-2019.3-amd64.iso",
+      "iso_checksum": "d9bc23ad1ed2af7f0170dc6d15aec58be2f1a0a5be6751ce067654b753ef7020",
+      "iso_checksum_type": "sha256",
+      "boot_wait": "5s",
+      "boot_command": [
+        "<down><wait100ms>",
+        "<down><wait100ms>",
+        "<down><wait100ms>",
+        "<down><wait100ms>",
+        "<down><wait100ms>",
+        "<enter>",
+        "<wait10s>",
+        "<enter><wait100ms>",
+        "<enter><wait100ms>",
+        "<enter>",
+        "<wait30s>",
+        "<enter><wait100ms>",
+        "<enter><wait100ms>",
+        "<wait5s>",
+        "{{ user `userpass` }}<wait100ms>",
+        "<enter><wait100ms>",
+        "{{ user `userpass` }}<wait100ms>",
+        "<enter>",
+        "<wait5s>",
+        "<enter><wait100ms>",
+        "<wait10s>",
+        "<enter><wait100ms>",
+        "<enter><wait100ms>",
+        "<enter>",
+        "<wait1s>",
+        "<enter>",
+        "<wait1s>",
+        "<tab><wait100ms>",
+        "<enter>",
+        "<wait5m>",
+        "<enter>",
+        "<wait1s>",
+        "<enter>",
+        "<wait1m>",
+        "<enter>",
+        "<wait1s>",
+        "<down><wait100ms>",
+        "<enter>",
+        "<wait2m>",
+        "<enter>",
+        "<wait2m>",
+        "{{ user `username` }}<wait100ms>",
+        "<enter><wait100ms>",
+        "{{ user `userpass` }}<wait100ms>",
+        "<enter>",
+        "<wait30s>",
+        "<leftSuper><wait5s>",
+        "terminal<wait5s>",
+        "<enter><wait2s>",
+        "echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config<wait1s>",
+        "<enter><wait100ms>",
+        "systemctl enable ssh<wait100ms>",
+        "<enter><wait100ms>",
+        "systemctl start ssh<wait100ms>",
+        "<enter>",
+        "clear<wait100ms>",
+        "<enter><wait100ms>",
+        "exit<wait100ms>",
+        "<enter>"
+      ],
+      "ssh_username": "{{ user `username` }}",
+      "ssh_password": "{{ user `userpass` }}",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -h now",
+      "format": "ova",
+      "skip_export": true,
+      "keep_registered": true,
+      "output_directory": "{{ user `ExportDir` }}",
+      "vm_name": "packer-kali"
+    }
+  ],
+  "provisioners": [
+    {
+        "type": "ansible",
+        "extra_arguments":
+        [
+          "--extra-vars", "ansible_become_password={{ user `userpass` }}"
+        ],
+        "playbook_file": "./scripts/kali.yml"
+    }
+  ]
+}

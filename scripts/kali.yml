@@ -1,0 +1,86 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Update Repos
+    apt:
+      update_cache: yes
+  - name: Install Debian Updates
+    apt:
+      upgrade: dist
+      autoclean: yes
+      autoremove: yes
+  - name: reboot
+    reboot:
+  - name: Add Docker Key
+    apt_key:
+      url: https://download.docker.com/linux/debian/gpg
+      state: present
+  - name: Add VSCode Key
+    apt_key:
+      url: https://packages.microsoft.com/keys/microsoft.asc
+      state: present
+  - name: Add Docker Repo
+    apt_repository:
+      repo: 'deb [arch=amd64] https://download.docker.com/linux/debian buster stable'
+      state: present
+      filename: docker
+  - name: Add VSCode Repo
+    apt_repository:
+      repo: deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main
+      filename: vscode
+  - name: Update Repos
+    apt:
+      update_cache: yes
+  - name: Kali Metapackage install
+    apt:
+      name: kali-linux-all
+      state: latest
+  - name: Install Empire
+    apt:
+      name: powershell-empire
+      state: latest
+  - name: Install VSCode
+    apt:
+      name: code
+      state: latest
+  - name: Install Atom
+    apt:
+      deb: https://atom.io/download/deb
+  - name: install Dependancies
+    apt:
+      name:
+        - dkms
+        - docker
+        - docker-compose
+        - libssl1.0-dev
+        - libffi-dev
+        - python-dev
+        - python-pip
+        - build-essential
+        - swig
+        - tcpdump
+        - python-virtualenv
+      state: latest
+  - name: Make Drivers directory
+    file:
+      path: /opt/drivers
+      state: directory
+  - name: Make Tools directory
+    file:
+      path: /opt/toolz
+      state: directory
+  - name: Download the Alfa Drivers
+    script: ./alfa.sh
+  - name: Download Silent Trinity
+    script: ./silenttrinity.sh
+  - name: Enable Docker service
+    service:
+      name: docker
+      enabled: yes
+  - name: Start Docker service
+    service:
+      name: docker
+      state: started
+  - name: Install pupy
+    script: ./pupy.sh

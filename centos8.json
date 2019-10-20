@@ -1,0 +1,65 @@
+{
+  "variables":
+    {
+    "username": "packer",
+    "userpass": "packer",
+    "ExportDir": "./packer_centos"
+    },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "cpus": 1,
+      "memory": 2048,
+      "disk_size": 20000,
+      "guest_os_type": "Redhat_64",
+      "vboxmanage": [
+        [ "modifyvm", "{{.Name}}", "--nictype1", "82543GC" ]
+      ],
+      "iso_url": "http://mirror.vcu.edu/pub/gnu_linux/centos/8.0.1905/isos/x86_64/CentOS-8-x86_64-1905-dvd1.iso",
+      "iso_checksum": "ea17ef71e0df3f6bf1d4bf1fc25bec1a76d1f211c115d39618fe688be34503e8",
+      "iso_checksum_type": "sha256",
+      "boot_wait": "5s",
+      "boot_command": [
+        "<up><wait1s>",
+        "<enter>",
+        "<wait40s>",
+        "<tab><wait1s>",
+        "<tab><wait1s>",
+        "<enter>",
+        "<wait2s>",
+        "<tab><wait1s>",
+        "<tab><wait1s>",
+        "<enter><wait1s>",
+        "<tab><wait1s>",
+        "<tab><wait1s>",
+        "<tab><wait1s>",
+        "<tab><wait1s>",
+        "<spacebar><wait1s>",
+        "<tab><wait1s>",
+        "<tab><wait1s>",
+        "{{.Name}}<wait1s>",
+        "<tab><wait1s>",
+        "<enter><wait1s>",
+        "<tab>"
+      ],
+      "ssh_username": "{{ user `username` }}",
+      "ssh_password": "{{ user `userpass` }}",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -h now",
+      "format": "ova",
+      "skip_export": false,
+      "keep_registered": false,
+      "output_directory": "{{ user `ExportDir` }}",
+      "vm_name": "packer-centos"
+    }
+  ],
+  "provisioners": [
+    {
+        "type": "ansible",
+        "extra_arguments":
+        [
+          "--extra-vars", "ansible_become_password={{ user `userpass` }}"
+        ],
+        "playbook_file": "./scripts/update.yml"
+    }
+  ]
+}

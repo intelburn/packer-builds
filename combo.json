@@ -1,0 +1,113 @@
+{
+    "variables":
+      {
+      "username": "packer",
+      "userpass": "packer",
+      "rootpass": "toor",
+      "ExportDir": "./packer_combo"
+      },
+    "builders": [
+      {
+        "name": "ubuntu",
+        "type": "virtualbox-iso",
+        "cpus": 1,
+        "memory": 2048,
+        "disk_size": 20000,
+        "guest_os_type": "Ubuntu_64",
+        "iso_url": "http://releases.ubuntu.com/18.04.3/ubuntu-18.04.3-live-server-amd64.iso",
+        "iso_checksum": "b9beac143e36226aa8a0b03fc1cbb5921cff80123866e718aaeba4edb81cfa63",
+        "iso_checksum_type": "sha256",
+        "boot_wait": "40s",
+        "boot_command": [
+          "<enter><wait100ms>",
+          "<enter><wait100ms>",
+          "<enter><wait100ms>",
+          "<enter><wait100ms>",
+          "<enter><wait100ms>",
+          "<enter><wait100ms>",
+          "<enter><wait100ms>",
+          "<enter><wait100ms>",
+          "<down><wait100ms>",
+          "<enter><wait100ms>",
+          "{{ user `username` }}<wait100ms>",
+          "<tab><wait100ms>",
+          "packed-ubuntu<wait100ms>",
+          "<tab><wait100ms>",
+          "{{ user `username` }}<wait100ms>",
+          "<tab><wait100ms>",
+          "{{ user `userpass` }}<wait100ms>",
+          "<tab><wait100ms>",
+          "{{ user `userpass` }}<wait100ms>",
+          "<tab><wait100ms>",
+          "<enter><wait100ms>",
+          "<spacebar><wait100ms>",
+          "<tab><wait100ms>",
+          "<tab><wait100ms>",
+          "<enter><wait100ms>",
+          "<tab><wait100ms>",
+          "<enter>",
+          "<wait5m>",
+          "<enter>",
+          "<wait5>",
+          "<enter>"
+        ],
+        "ssh_username": "{{ user `username` }}",
+        "ssh_password": "{{ user `userpass` }}",
+        "shutdown_command": "echo 'packer' | sudo -S shutdown -h now",
+        "format": "ova",
+        "skip_export": false,
+        "keep_registered": false,
+        "output_directory": "{{ user `ExportDir` }}",
+        "vm_name": "ubuntu"
+      },
+      {
+        "name": "centos8",
+        "type": "virtualbox-iso",
+        "cpus": 1,
+        "memory": 2048,
+        "disk_size": 20000,
+        "guest_os_type": "Redhat_64",
+        "http_directory": "scripts",
+        "vboxmanage": [
+          [ "modifyvm", "{{.Name}}", "--nictype1", "82543GC" ]
+        ],
+        "iso_url": "http://mirror.vcu.edu/pub/gnu_linux/centos/8.0.1905/isos/x86_64/CentOS-8-x86_64-1905-dvd1.iso",
+        "iso_checksum": "ea17ef71e0df3f6bf1d4bf1fc25bec1a76d1f211c115d39618fe688be34503e8",
+        "iso_checksum_type": "sha256",
+        "boot_wait": "5s",
+        "boot_command": [
+          "<up><wait1s>",
+          "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/kickstart.cfg",
+          "<enter><wait1m>",
+          "5<enter><wait100ms>",
+          "c<enter><wait100ms>",
+          "c<enter><wait100ms>",
+          "c<enter><wait100ms>",
+          "6<enter><wait100ms>",
+          "1<enter><wait100ms>",
+          "c<enter><wait100ms>",
+          "b<enter>",
+          "<wait3m>",
+          "<enter>"
+        ],
+        "ssh_username": "{{ user `username` }}",
+        "ssh_password": "{{ user `userpass` }}",
+        "shutdown_command": "echo 'packer' | sudo -S shutdown -h now",
+        "format": "ova",
+        "skip_export": false,
+        "keep_registered": false,
+        "output_directory": "{{ user `ExportDir` }}",
+        "vm_name": "centos8"
+      }
+    ],
+    "provisioners": [
+      {
+          "type": "ansible",
+          "extra_arguments":
+          [
+            "--extra-vars", "ansible_become_password={{ user `userpass` }}"
+          ],
+          "playbook_file": "./scripts/update.yml"
+      }
+    ]
+}
