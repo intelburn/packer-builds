@@ -3,7 +3,7 @@
     {
     "username": "packer",
     "userpass": "packer",
-    "ExportDir": "./packer_ubuntu"
+    "ExportDir": "./packer_combo"
     },
   "builders": [
     {
