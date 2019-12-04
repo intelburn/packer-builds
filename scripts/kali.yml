@@ -61,6 +61,8 @@
         - swig
         - tcpdump
         - python-virtualenv
+        - python3-pip
+        - python-pip
       state: latest
   - name: Make Drivers directory
     file:
@@ -84,3 +86,12 @@
       state: started
   - name: Install pupy
     script: ./pupy.sh
+  - name: "Make Ghidra directory"
+    file:
+      path: /opt/toolz/ghidra
+      state: directory
+  - name: "Install Ghidra"
+    unarchive:
+      src: https://ghidra-sre.org/ghidra_9.1_PUBLIC_20191023.zip
+      dest: /opt/toolz/ghidra
+      remote_src: yes
