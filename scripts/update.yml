@@ -1,8 +1,6 @@
 ---
-#- ansible_become_password: packer
 - hosts: all
   become: yes
-  #ansible_become_password: packer
   tasks:
   - name: Install RHEL updates
     yum:

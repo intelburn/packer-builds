@@ -1,8 +1,0 @@
-all:
-  hosts:
-    10.0.3.2:
-  vars:
-    ansible_user: root
-    ansible_password: toor
-    ansible_become_password: toor
-    host_key_checking: no

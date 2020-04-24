@@ -16,19 +16,11 @@
     apt_key:
       url: https://download.docker.com/linux/debian/gpg
       state: present
-  - name: Add VSCode Key
-    apt_key:
-      url: https://packages.microsoft.com/keys/microsoft.asc
-      state: present
   - name: Add Docker Repo
     apt_repository:
       repo: 'deb [arch=amd64] https://download.docker.com/linux/debian buster stable'
       state: present
       filename: docker
-  - name: Add VSCode Repo
-    apt_repository:
-      repo: deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main
-      filename: vscode
   - name: Update Repos
     apt:
       update_cache: yes
@@ -42,8 +34,7 @@
       state: latest
   - name: Install VSCode
     apt:
-      name: code
-      state: latest
+      deb: https://go.microsoft.com/fwlink/?LinkID=760868
   - name: Install Atom
     apt:
       deb: https://atom.io/download/deb
@@ -92,6 +83,6 @@
       state: directory
   - name: "Install Ghidra"
     unarchive:
-      src: https://ghidra-sre.org/ghidra_9.1_PUBLIC_20191023.zip
+      src: https://ghidra-sre.org/ghidra_9.1.2_PUBLIC_20200212.zip
       dest: /opt/toolz/ghidra
       remote_src: yes
